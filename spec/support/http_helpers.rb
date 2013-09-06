@@ -16,11 +16,15 @@ module HTTPHelpers
     Rack::Utils.status_code symbol
   end
 
-  def csr_post(overrides={})
+  def app_post(route='/', overrides={})
     default_params = {
-      'auth' => valid_user.identity_key,
-      'csr'  => valid_csr,
+      'auth'  => valid_user.identity_key,
+      'csr'   => valid_csr,
     }
-    post 'https://example.com/csr', default_params.merge(overrides)
+    post "https://example.com#{route}", default_params.merge(overrides)
+  end
+
+  def csr_post(overrides={})
+    app_post '/csr', overrides
   end
 end

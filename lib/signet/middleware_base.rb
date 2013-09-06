@@ -1,6 +1,12 @@
-module Signet
+require 'signet/authenticator'
+require 'sinatra/base'
 
-  module HTTPServerErrors
+module Signet
+  class MiddlewareBase < Sinatra::Base
+
+    before { authenticate }
+
+    protected
 
     ERRORS = {
       no_auth:  {
@@ -20,5 +26,18 @@ module Signet
         status: :bad_request
       },
     }
+
+    def halt_with(error)
+      status, message = ERRORS[error][:status], ERRORS[error][:message]
+      logger.error message
+      halt Rack::Utils.status_code(status), "#{message}\n"
+    end
+
+    private
+
+    def authenticate
+      halt_with :no_auth  if params[:auth].nil?
+      halt_with :bad_auth unless Authenticator.valid_identity_key? params[:auth]
+    end
   end
 end
