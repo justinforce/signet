@@ -1,9 +1,8 @@
 require 'spec_helper'
-require 'signet/http_server'
+require 'signet/server'
 require 'support/http_helpers'
-require 'support/openssl_helpers'
 
-describe Signet::HTTPServer do
+describe Signet::Server do
 
   include HTTPHelpers
   include Rack::Test::Methods

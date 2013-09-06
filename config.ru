@@ -1,7 +1,7 @@
 $: << 'lib'
 
-require 'signet/http_server'
+require 'signet/server'
 
 ENV['RACK_ENV'] ||= 'development'
 
-run Signet::HTTPServer.new
+run Signet::Server.new

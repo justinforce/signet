@@ -5,7 +5,7 @@ require 'sinatra/base'
 
 module Signet
 
-  class HTTPServer < Sinatra::Base
+  class Server < Sinatra::Base
 
     include HTTPServerErrors
 
