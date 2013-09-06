@@ -1,29 +1,14 @@
 require 'spec_helper'
-require 'signet/http_server'
+require 'signet/certificate_signer'
 require 'support/http_helpers'
-require 'support/openssl_helpers'
 
-describe Signet::HTTPServer do
+describe Signet::CertificateSigner do
 
   include HTTPHelpers
   include Rack::Test::Methods
 
-  describe 'authentication' do
-
-    it 'forbids access without authentication' do
-      csr_post 'auth' => nil
-      last_response.status.should == status_code(:bad_request)
-    end
-
-    it 'forbids access with invalid authentication' do
-      csr_post 'auth' => 'invalid auth'
-      last_response.status.should == status_code(:forbidden)
-    end
-
-    it 'allows access with valid authentication' do
-      csr_post
-      last_response.status.should_not == status_code(:forbidden)
-    end
+  it 'is a subclass of MiddlewareBase' do
+    Signet::CertificateSigner.ancestors.should include Signet::MiddlewareBase
   end
 
   it 'accepts POSTs to /csr' do

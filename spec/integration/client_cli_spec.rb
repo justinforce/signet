@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'signet/configuration'
-require 'signet/http_server'
+require 'signet/server'
 require 'support/openssl_helpers'
 require 'timeout'
 
@@ -35,7 +35,7 @@ describe 'Client CLI integration' do
       pid = fork do
         $stdout = StringIO.new # silence the puma!
         Rack::Server.start \
-          app:       Signet::HTTPServer,
+          app:       Signet::Server,
           Port:      uri.port,
           AccessLog: [],
           Logger:    SilentLogger.new
