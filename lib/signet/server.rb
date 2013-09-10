@@ -1,10 +1,10 @@
 require 'signet/certificate_signer'
-require 'signet/shims/certificate_signer_v1'
+require 'signet/shims/legacy_certificate_signer'
 require 'sinatra/base'
 
 module Signet
   class Server < Sinatra::Base
     use Signet::CertificateSigner
-    use Signet::Shims::CertificateSignerV1
+    use Signet::Shims::LegacyCertificateSigner
   end
 end
