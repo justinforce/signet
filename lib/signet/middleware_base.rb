@@ -35,28 +35,28 @@ module Signet
 
     # An array of regular expressions representing paths that are exempt from
     # authentication. The proper way to use this is to define your route then
-    # add the route to the blacklist. e.g.
+    # add the route to the exemptions list. e.g.
     #
     #   get '/csr_gen/:mac.pem' do |mac|
     #     # ...do stuff...
     #   end
-    #   authentication_blacklist << '^\/csr_gen\/.*.pem$'
+    #   authentication_exemptions << '^\/csr_gen\/.*.pem$'
     #
-    def self.authentication_blacklist
-      @@authentication_blacklist ||= []
+    def self.authentication_exemptions
+      @@authentication_exemptions ||= []
     end
 
     private
 
     def authenticate
-      pass if in_authentication_blacklist? request.path_info
+      pass if exempt_from_authentication?
       halt_with :no_auth  if params[:auth].nil?
       halt_with :bad_auth unless Authenticator.valid_identity_key? params[:auth]
     end
 
-    def in_authentication_blacklist?(path)
-      @@authentication_blacklist.find do |match|
-        Regexp.new(match) =~ path
+    def exempt_from_authentication?
+      @@authentication_exemptions.find do |match|
+        Regexp.new(match) =~ request.path_info
       end
     end
   end

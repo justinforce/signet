@@ -16,7 +16,7 @@ describe Signet::MiddlewareBase do
       get '/no_auth' do
         200
       end
-      authentication_blacklist << '^\/no_auth$'
+      authentication_exemptions << '^\/no_auth$'
     end
   end
 
@@ -37,7 +37,7 @@ describe Signet::MiddlewareBase do
       last_response.status.should_not == status_code(:forbidden)
     end
 
-    it 'respects the authentication blacklist' do
+    it 'respects authentication exemptions' do
       app_get '/no_auth', 'auth' => nil
       last_response.status.should == 200
     end

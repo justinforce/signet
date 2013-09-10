@@ -37,7 +37,7 @@ module Signet
       get '/csr_gen/:mac.pem' do |mac|
         "MAC #{mac}"
       end
-      authentication_blacklist << '^\/csr_gen\/.*.pem$'
+      authentication_exemptions << '^\/csr_gen\/.*.pem$'
     end
   end
 end
