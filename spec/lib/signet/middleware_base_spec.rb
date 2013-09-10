@@ -12,6 +12,11 @@ describe Signet::MiddlewareBase do
       get '/fake' do
         200
       end
+
+      get '/no_auth' do
+        200
+      end
+      authentication_blacklist << '^\/no_auth$'
     end
   end
 
@@ -30,6 +35,11 @@ describe Signet::MiddlewareBase do
     it 'allows access with valid authentication' do
       app_post '/fake'
       last_response.status.should_not == status_code(:forbidden)
+    end
+
+    it 'respects the authentication blacklist' do
+      app_get '/no_auth', 'auth' => nil
+      last_response.status.should == 200
     end
   end
 
