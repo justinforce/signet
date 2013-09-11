@@ -16,7 +16,7 @@ describe Signet::MiddlewareBase do
       get '/no_auth' do
         200
       end
-      authentication_exemptions << '^\/no_auth$'
+      authentication_exemptions << /^\/no_auth$/
     end
   end
 

@@ -31,13 +31,25 @@ module Signet
       # Therefore, the race condition is not possible.
 
       post '/csr/signme' do
-        'SIGNME'
+        begin
+          csr = OpenSSL::X509::Request.new File.read(params[:file][:tempfile])
+          CertificateAuthority.sign(csr).to_pem
+        rescue NoMethodError
+        end
       end
 
       get '/csr_gen/:mac.pem' do |mac|
         "MAC #{mac}"
       end
-      authentication_exemptions << '^\/csr_gen\/.*.pem$'
+      authentication_exemptions << /^\/csr_gen\/.*.pem$/
+
+      private
+
+      def csr
+        OpenSSL::X509::Request.new File.read(params[:file][:tempfile])
+      rescue OpenSSL::X509::RequestError
+        halt_with :bad_csr
+      end
     end
   end
 end

@@ -137,14 +137,14 @@ authentication.
 #### Authentication Exemptions ####
 
 Routes added to the exemptions list should be as specifically defined as
-possible, e.g. not `csr_gen` but `^\/csr_gen\/.*.pem$`. To add a route to the
-exemptions list, define it then add it, e.g.
+possible, e.g. not `/csr_gen/` but `/^\/csr_gen\/.*.pem$/`. To add a route to
+the exemptions list, define it then add it, e.g.
 
 ```ruby
 get '/csr_gen/:mac.pem' do |mac|
   # ...do stuff...
 end
-authentication_exemptions << '^\/csr_gen\/.*.pem$'
+authentication_exemptions << /^\/csr_gen\/.*.pem$/
 ```
 
 ### Testing ###
@@ -168,7 +168,10 @@ enumerated and described here.
 
 #### Legacy Certificate Signer ####
 
-    TODO: Write this
+    TODO: Finish this
+
+For a complete description of how this works, see the comments in
+`lib/signet/shims/legacy_certificate_signer.rb`.
 
 Contributing
 ------------

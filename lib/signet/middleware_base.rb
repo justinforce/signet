@@ -40,7 +40,7 @@ module Signet
     #   get '/csr_gen/:mac.pem' do |mac|
     #     # ...do stuff...
     #   end
-    #   authentication_exemptions << '^\/csr_gen\/.*.pem$'
+    #   authentication_exemptions << /^\/csr_gen\/.*.pem$/
     #
     def self.authentication_exemptions
       @@authentication_exemptions ||= []
@@ -56,7 +56,7 @@ module Signet
 
     def exempt_from_authentication?
       @@authentication_exemptions.find do |match|
-        Regexp.new(match) =~ request.path_info
+        match =~ request.path_info
       end
     end
   end

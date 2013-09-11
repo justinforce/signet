@@ -1,6 +1,7 @@
 require 'spec_helper'
-require 'support/http_helpers'
 require 'signet/shims/legacy_certificate_signer'
+require 'support/http_helpers'
+require 'support/openssl_helpers'
 
 describe Signet::Shims::LegacyCertificateSigner do
 
@@ -17,17 +18,19 @@ describe Signet::Shims::LegacyCertificateSigner do
 
     # TODO remove this do-nothing demo
     it 'routes' do
-      app_post '/csr/signme'
-      last_response.body.should =~ /SIGNME/
+      app_post '/csr/signme', 'file' => Rack::Test::UploadedFile.new(valid_csr_file_path, 'text/plain')
+      expect { OpenSSL::X509::Certificate.new last_response.body }.not_to raise_error
     end
 
     context 'success' do
       it 'creates a certificate in the certificate cache' do
+        # binding.pry
         pending
         certificate = double OpenSSL::X509::Certificate
         CertificateSigner.should_receive
         Signet::CertificateCache.should_receive(:put)
       end
+
       it 'returns a 200 OK status'
     end
 

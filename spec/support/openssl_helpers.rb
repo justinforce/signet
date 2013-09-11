@@ -92,4 +92,16 @@ module OpenSSLHelpers
   def cert_serial
     SecureRandom.uuid.gsub(/-/, '').hex
   end
+
+  # To test with Rack::Test::UploadedFile, we need to write the csr to a file
+  # first
+  #
+  def valid_csr_file_path
+    @valid_csr_file_path ||= proc do
+      file = Tempfile.new('valid_csr_file')
+      file.write valid_csr
+      file.close
+      file.path
+    end.call
+  end
 end
