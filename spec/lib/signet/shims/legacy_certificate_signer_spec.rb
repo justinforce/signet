@@ -10,28 +10,28 @@ describe Signet::Shims::LegacyCertificateSigner do
 
   MAC = '00:11:22:33:44:55'
 
+  let :cert do
+    valid_certificate
+  end
+
   describe 'POST /csr/signme' do
 
-    before :each do
-      signme_post
-    end
-
-    # TODO remove this do-nothing demo
-    it 'routes' do
-      app_post '/csr/signme', 'file' => Rack::Test::UploadedFile.new(valid_csr_file_path, 'text/plain')
-      expect { OpenSSL::X509::Certificate.new last_response.body }.not_to raise_error
-    end
-
     context 'success' do
+
       it 'creates a certificate in the certificate cache' do
-        # binding.pry
-        pending
-        certificate = double OpenSSL::X509::Certificate
-        CertificateSigner.should_receive
-        Signet::CertificateCache.should_receive(:put)
+        Signet::CertificateAuthority.should_receive(:sign).and_return cert
+        Signet::CertificateCache.should_receive(:push).with(cert)
+        temp_csr_file do |path|
+          app_post '/csr/signme', 'csr' => Rack::Test::UploadedFile.new(path, 'text/plain')
+        end
       end
 
-      it 'returns a 200 OK status'
+      it 'returns a 200 OK status' do
+        temp_csr_file do |path|
+          app_post '/csr/signme', 'csr' => Rack::Test::UploadedFile.new(path, 'text/plain')
+        end
+        last_response.status.should == 200
+      end
     end
 
     context 'when authentication fails' do
@@ -42,7 +42,10 @@ describe Signet::Shims::LegacyCertificateSigner do
     end
 
     context 'when the request is malformed' do
-      it 'returns a 400 Bad Request status'
+      it 'returns a 400 Bad Request status' do
+        app_post '/csr/signme', 'csr' => nil
+        last_response.status.should == 400
+      end
     end
   end
 

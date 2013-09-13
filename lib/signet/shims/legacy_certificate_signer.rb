@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'signet/certificate_cache'
 require 'signet/middleware_base'
 
 module Signet
@@ -31,11 +32,9 @@ module Signet
       # Therefore, the race condition is not possible.
 
       post '/csr/signme' do
-        begin
-          csr = OpenSSL::X509::Request.new File.read(params[:file][:tempfile])
-          CertificateAuthority.sign(csr).to_pem
-        rescue NoMethodError
-        end
+        halt_with :bad_csr if params[:csr].nil?
+        CertificateCache.push CertificateAuthority.sign(csr)
+        200
       end
 
       get '/csr_gen/:mac.pem' do |mac|
@@ -46,9 +45,7 @@ module Signet
       private
 
       def csr
-        OpenSSL::X509::Request.new File.read(params[:file][:tempfile])
-      rescue OpenSSL::X509::RequestError
-        halt_with :bad_csr
+        OpenSSL::X509::Request.new File.read(params[:csr][:tempfile])
       end
     end
   end
