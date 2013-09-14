@@ -5,8 +5,10 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
   SimpleCov::Formatter::HTMLFormatter,
   Coveralls::SimpleCov::Formatter
 ]
+
 SimpleCov.start do
-  add_filter 'spec'
+  add_group 'Source', 'signet/lib'
+  add_group 'Specs',  'signet/spec'
 end
 
 require 'factory_girl'

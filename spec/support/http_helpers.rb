@@ -37,10 +37,4 @@ module HTTPHelpers
     }
     app_post '/csr', default_params.merge(overrides)
   end
-
-  def signme_post(overrides={})
-    default_params = {
-    }
-    app_post '/csr/signme', default_params.merge(overrides)
-  end
 end

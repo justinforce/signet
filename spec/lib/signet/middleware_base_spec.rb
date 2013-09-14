@@ -9,10 +9,6 @@ describe Signet::MiddlewareBase do
 
   let :app do
     Class.new Signet::MiddlewareBase do
-      get '/fake' do
-        200
-      end
-
       get '/no_auth' do
         200
       end

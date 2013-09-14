@@ -14,10 +14,6 @@ describe Signet::Configuration do
     new_class.new.instance_eval(&block)
   end
 
-  def expected_config_path(env)
-    File.expand_path("#{File.dirname(__FILE__)}../../../../config/#{env}.yml")
-  end
-
   def with_env(env, &block)
     original_env = ENV['RACK_ENV']
     ENV['RACK_ENV'] = env
