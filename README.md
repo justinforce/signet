@@ -168,9 +168,8 @@ enumerated and described here.
 
 #### Legacy Certificate Signer ####
 
-    TODO: Finish this
-
-For a complete description of how this works, see the comments in
+This shim supports legacy certificate requests which are made in two parts. For
+a complete description of how this works, see the comments in
 `lib/signet/shims/legacy_certificate_signer.rb`.
 
 Contributing

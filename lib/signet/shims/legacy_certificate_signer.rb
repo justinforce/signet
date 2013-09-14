@@ -1,6 +1,6 @@
 require 'sinatra/base'
-require 'signet/certificate_cache'
 require 'signet/middleware_base'
+require 'signet/shims/certificate_cache'
 
 module Signet
   module Shims
@@ -38,7 +38,7 @@ module Signet
       end
 
       get '/csr_gen/:mac.pem' do |mac|
-        "MAC #{mac}"
+        CertificateCache.pop(mac) || 404
       end
       authentication_exemptions << /^\/csr_gen\/.*.pem$/
 

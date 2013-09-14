@@ -8,8 +8,6 @@ describe Signet::Shims::LegacyCertificateSigner do
   include HTTPHelpers
   include Rack::Test::Methods
 
-  MAC = '00:11:22:33:44:55'
-
   let :cert do
     valid_certificate
   end
@@ -20,7 +18,7 @@ describe Signet::Shims::LegacyCertificateSigner do
 
       it 'creates a certificate in the certificate cache' do
         Signet::CertificateAuthority.should_receive(:sign).and_return cert
-        Signet::CertificateCache.should_receive(:push).with(cert)
+        Signet::Shims::CertificateCache.should_receive(:push).with(cert)
         temp_csr_file do |path|
           app_post '/csr/signme', 'csr' => Rack::Test::UploadedFile.new(path, 'text/plain')
         end
@@ -51,20 +49,37 @@ describe Signet::Shims::LegacyCertificateSigner do
 
   describe 'GET /csr_gen/:mac.pem' do
 
-    # TODO remove this do-nothing demo
-    it 'routes' do
-      app_get "/csr_gen/#{MAC}.pem"
-      last_response.body.should =~ /MAC #{MAC}/
-    end
-
     context 'success' do
-      it 'retrieves the certificate from the certificate cache'
-      it 'sends the certificate in the body'
-      it 'returns a 200 OK status'
+
+      let :key do
+        Signet::Shims::CertificateCache.send(:key_for, cert)
+      end
+
+      before :each do
+        Signet::Shims::CertificateCache.push cert
+      end
+
+      it 'retrieves the certificate from the certificate cache' do
+        Signet::Shims::CertificateCache.should_receive(:pop).with(key)
+        app_get "/csr_gen/#{key}.pem"
+      end
+
+      it 'sends the certificate in the body' do
+        app_get "/csr_gen/#{key}.pem"
+        last_response.body.should == cert.to_pem
+      end
+
+      it 'returns a 200 OK status' do
+        app_get "/csr_gen/#{key}.pem"
+        last_response.status.should == 200
+      end
     end
 
     context 'when the certificate is not found' do
-      it 'returns a 404 Not Found status'
+      it 'returns a 404 Not Found status' do
+        app_get "/csr_gen/BAD_KEY.pem"
+        last_response.status.should == 404
+      end
     end
   end
 end
