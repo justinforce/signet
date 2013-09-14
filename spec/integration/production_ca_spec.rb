@@ -18,8 +18,10 @@ describe 'Production certificate authority integration' do
     unset_certificate_authority
   end
 
+  # We don't upload sensitive data to Travis, so the production CA integration
+  # specs can't be run there. If Travis is detected, skip them.
   before :each do
-    pending INSTALL_PRODUCTION_FILES unless production_files_exist?
+    pending INSTALL_PRODUCTION_FILES if ENV['TRAVIS']
   end
 
   describe 'production CA private key'  do
