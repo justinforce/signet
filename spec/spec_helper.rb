@@ -5,8 +5,14 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
   SimpleCov::Formatter::HTMLFormatter,
   Coveralls::SimpleCov::Formatter
 ]
+
 SimpleCov.start do
-  add_filter 'spec'
+  add_group  'Source', 'signet/lib'
+  add_group  'Specs',  'signet/spec'
+
+  # We don't upload sensitive data to Travis, so the production CA integration
+  # specs can't be run there. If Travis is detected, skip it.
+  add_filter 'spec/integration/production_ca' if ENV['TRAVIS']
 end
 
 require 'factory_girl'
@@ -58,16 +64,6 @@ end
 
 def valid_user
   @valid_user ||= FactoryGirl.build(:valid_user)
-end
-
-def production_files_exist?
-  [
-    PRODUCTION_CA_CERT_PATH,
-    PRODUCTION_PRIVATE_KEY_PATH,
-    PRODUCTION_CONFIG_PATH
-  ].each do |path|
-    return false unless File.exist? path
-  end
 end
 
 def production_private_key_passphrase

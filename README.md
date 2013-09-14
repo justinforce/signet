@@ -16,6 +16,9 @@ A server runs and responds to a certificate signing requests POST-ed over HTTP
 with a certificate. To use it, you set up the server, then make requests with a
 client CLI. Both require minimal configuration.
 
+Interoperability with legacy infrastructure is achieved through the use of
+shims. See the **Shims** section below for more information.
+
 Operating
 ---------
 
@@ -121,8 +124,30 @@ The name (aka common name, aka CN) of the client requesting the certificate.
 This should be fairly unique to the client. For most clients, you'll want to
 base this on the host name or MAC address or some other distinguishing feature.
 
-Testing
--------
+
+Development
+-----------
+
+### Authentication ###
+
+All requests are authenticated before they're processed. For compatibility with
+legacy requests, we have the ability to exempt certain routes from requiring
+authentication.
+
+#### Authentication Exemptions ####
+
+Routes added to the exemptions list should be as specifically defined as
+possible, e.g. not `/csr_gen/` but `/^\/csr_gen\/.*.pem$/`. To add a route to
+the exemptions list, define it then add it, e.g.
+
+```ruby
+get '/csr_gen/:mac.pem' do |mac|
+  # ...do stuff...
+end
+authentication_exemptions << /^\/csr_gen\/.*.pem$/
+```
+
+### Testing ###
 
 Unit and integration testing is done with [RSpec][] and tasks are managed with
 [Rake][].
@@ -134,6 +159,18 @@ bundle
 RACK_ENV=test rake init
 rake
 ```
+
+### Shims ###
+
+For compatibility with legacy certificate signer requests, some shims are
+required. These shims are located in the `lib/shims` directory and are
+enumerated and described here.
+
+#### Legacy Certificate Signer ####
+
+This shim supports legacy certificate requests which are made in two parts. For
+a complete description of how this works, see the comments in
+`lib/signet/shims/legacy_certificate_signer.rb`.
 
 Contributing
 ------------

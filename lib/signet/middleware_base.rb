@@ -33,11 +33,31 @@ module Signet
       halt Rack::Utils.status_code(status), "#{message}\n"
     end
 
+    # An array of regular expressions representing paths that are exempt from
+    # authentication. The proper way to use this is to define your route then
+    # add the route to the exemptions list. e.g.
+    #
+    #   get '/csr_gen/:mac.pem' do |mac|
+    #     # ...do stuff...
+    #   end
+    #   authentication_exemptions << /^\/csr_gen\/.*.pem$/
+    #
+    def self.authentication_exemptions
+      @@authentication_exemptions ||= []
+    end
+
     private
 
     def authenticate
+      pass if exempt_from_authentication?
       halt_with :no_auth  if params[:auth].nil?
       halt_with :bad_auth unless Authenticator.valid_identity_key? params[:auth]
+    end
+
+    def exempt_from_authentication?
+      @@authentication_exemptions.find do |match|
+        match =~ request.path_info
+      end
     end
   end
 end

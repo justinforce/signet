@@ -4,6 +4,7 @@ gem 'activerecord'
 gem 'sinatra'
 gem 'rake'
 gem 'hashie'
+gem 'redis'
 
 group :production do
   gem 'foreman'

@@ -92,4 +92,19 @@ module OpenSSLHelpers
   def cert_serial
     SecureRandom.uuid.gsub(/-/, '').hex
   end
+
+  # Use a temp file to test the csr upload with Rack::Test::UploadedFile. Just
+  # pass a block and you get the file path as a parameter.
+  #
+  def temp_csr_file
+    Tempfile.open 'valid_csr_file' do |file|
+      begin
+        file.write valid_csr
+        file.close
+        yield file.path
+      ensure
+        file.unlink
+      end
+    end
+  end
 end

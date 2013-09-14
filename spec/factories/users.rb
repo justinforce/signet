@@ -1,5 +1,5 @@
-require 'signet/user'
 require 'signet/configuration'
+require 'signet/user'
 
 include Signet::Configuration
 
