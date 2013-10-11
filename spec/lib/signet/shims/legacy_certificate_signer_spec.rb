@@ -49,6 +49,14 @@ describe Signet::Shims::LegacyCertificateSigner do
 
   describe 'GET /csr_gen/:mac.pem' do
 
+    it 'is exempt from authentication' do
+      Signet::Shims::LegacyCertificateSigner.class_eval do
+        !!authentication_exemptions.find do |match|
+          match =~ '/csr_gen/00:11:22:33:44:55.pem'
+        end
+      end
+    end
+
     context 'success' do
 
       let :key do
