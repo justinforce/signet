@@ -59,4 +59,8 @@ describe Signet::MiddlewareBase do
       last_response.status.should == status
     end
   end
+
+  describe '::authentication_exemptions' do
+    it 'returns an Array of Regexs matching paths exempt from authentication'
+  end
 end

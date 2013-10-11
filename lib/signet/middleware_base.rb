@@ -4,7 +4,17 @@ require 'sinatra/base'
 module Signet
   class MiddlewareBase < Sinatra::Base
 
-    before { authenticate }
+    before do
+
+      # XXX I hate that this is in here because it's really part of a shim, but
+      # I can't figure out another way to do it just now. This loads first, so
+      # the shim's before filters get appended, and I just can't figure out how
+      # to prepend them. In the future, I want to discover and fix this without
+      # wedging shim stuff into the main app.
+      params[:auth] ||= params[:identity_key]
+
+      authenticate
+    end
 
     protected
 
@@ -55,7 +65,7 @@ module Signet
     end
 
     def exempt_from_authentication?
-      @@authentication_exemptions.find do |match|
+      !!@@authentication_exemptions.find do |match|
         match =~ request.path_info
       end
     end

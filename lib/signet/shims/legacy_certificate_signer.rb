@@ -40,7 +40,7 @@ module Signet
       get '/csr_gen/:mac.pem' do |mac|
         CertificateCache.pop(mac) || 404
       end
-      authentication_exemptions << /^\/csr_gen\/.*.pem$/
+      authentication_exemptions << /^\/csr_gen\/.*\.pem$/
 
       private
 
