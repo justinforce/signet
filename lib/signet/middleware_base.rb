@@ -1,8 +1,11 @@
 require 'signet/authenticator'
+require 'signet/configuration'
 require 'sinatra/base'
 
 module Signet
   class MiddlewareBase < Sinatra::Base
+
+    include Signet::Configuration
 
     before do
 
@@ -77,7 +80,7 @@ module Signet
     end
 
     def ssl_client_verify
-      request.env['SSL_CLIENT_VERIFY']
+      request.env["HTTP_#{config.http.ssl_client_verify_header}"]
     end
   end
 end

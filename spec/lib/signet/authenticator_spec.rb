@@ -6,20 +6,20 @@ describe Signet::Authenticator do
 
   describe '::valid_client_certificate?' do
 
-    # For an explanation of SSL_CLIENT_VERIFY values, see $ssl_client_verify
-    # under Embedded Variables at
+    # These tests assume nginx's ssl_verify_client/$ssl_client_verify. For an
+    # explanation of the values, see
     # http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_verify_client
 
     let :no_cert_request do
-      OpenStruct.new env: { 'SSL_CLIENT_VERIFY' => 'NONE' }
+      OpenStruct.new env: { ssl_client_verify_header => 'NONE' }
     end
 
     let :bad_cert_request do
-      OpenStruct.new env: { 'SSL_CLIENT_VERIFY' => 'FAILED' }
+      OpenStruct.new env: { ssl_client_verify_header => 'FAILED' }
     end
 
     let :good_cert_request do
-      OpenStruct.new env: { 'SSL_CLIENT_VERIFY' => 'SUCCESS' }
+      OpenStruct.new env: { ssl_client_verify_header => 'SUCCESS' }
     end
 
     it 'fails with no client certificate' do
