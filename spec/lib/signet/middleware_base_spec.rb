@@ -61,6 +61,9 @@ describe Signet::MiddlewareBase do
   end
 
   describe '::authentication_exemptions' do
-    it 'returns an Array of Regexs matching paths exempt from authentication'
+
+    it 'returns an Array of Regexs matching paths exempt from authentication' do
+      app.send(:authentication_exemptions).should include(/^\/no_auth$/)
+    end
   end
 end
