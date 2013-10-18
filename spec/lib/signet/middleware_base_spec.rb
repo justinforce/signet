@@ -37,6 +37,19 @@ describe Signet::MiddlewareBase do
       app_get '/no_auth', 'auth' => nil
       last_response.status.should == 200
     end
+
+    context 'when a client certificate is sent' do
+
+      it 'authenticates if the certificate is valid' do
+        app_post '/fake', { 'auth' => nil }, { 'SSL_CLIENT_VERIFY' => 'SUCCESS' }
+        last_response.status.should == 404
+      end
+
+      it 'does not authenticate if the certificate is invalid' do
+        app_post '/fake', { 'auth' => nil }, { 'SSL_CLIENT_VERIFY' => 'FAILED' }
+        last_response.status.should == 403
+      end
+    end
   end
 
   describe '#halt_with' do

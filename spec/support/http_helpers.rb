@@ -16,19 +16,19 @@ module HTTPHelpers
     Rack::Utils.status_code symbol
   end
 
-  def app_request(type, route, overrides={})
+  def app_request(type, route, overrides={}, headers={})
     default_params = {
       'auth' => valid_user.identity_key,
     }
-    send type, "https://example.com#{route}", default_params.merge(overrides)
+    send type, "https://example.com#{route}", default_params.merge(overrides), headers
   end
 
   def app_get(route='/', overrides={})
     app_request :get, route, overrides
   end
 
-  def app_post(route='/', overrides={})
-    app_request :post, route, overrides
+  def app_post(route='/', overrides={}, headers={})
+    app_request :post, route, overrides, headers
   end
 
   def csr_post(overrides={})

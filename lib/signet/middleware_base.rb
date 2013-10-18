@@ -60,14 +60,24 @@ module Signet
 
     def authenticate
       pass if exempt_from_authentication?
-      halt_with :no_auth  if params[:auth].nil?
-      halt_with :bad_auth unless Authenticator.valid_identity_key? params[:auth]
+      halt_with :no_auth  if params[:auth].nil? and no_client_certificate?
+      unless Authenticator.valid_client_certificate?(request) or Authenticator.valid_identity_key?(params[:auth])
+        halt_with :bad_auth
+      end
     end
 
     def exempt_from_authentication?
       !!@@authentication_exemptions.find do |match|
         match =~ request.path_info
       end
+    end
+
+    def no_client_certificate?
+      ssl_client_verify.nil? or ssl_client_verify == 'NONE'
+    end
+
+    def ssl_client_verify
+      request.env['SSL_CLIENT_VERIFY']
     end
   end
 end
