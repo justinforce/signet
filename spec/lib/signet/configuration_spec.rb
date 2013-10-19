@@ -10,10 +10,6 @@ describe Signet::Configuration do
     Class.new { include Signet::Configuration }
   end
 
-  def in_new_class(&block)
-    new_class.new.instance_eval(&block)
-  end
-
   def with_env(env, &block)
     original_env = ENV['RACK_ENV']
     ENV['RACK_ENV'] = env
@@ -25,6 +21,17 @@ describe Signet::Configuration do
     unset_configuration
     example.run
     unset_configuration
+  end
+
+  describe 'the Configuration module' do
+
+    it 'works in instances' do
+      new_class.new.config.should_not be_empty
+    end
+
+    it 'works in classes' do
+      new_class.config.should_not be_empty
+    end
   end
 
   describe '#config' do
@@ -47,7 +54,7 @@ describe Signet::Configuration do
     it 'only loads the config once for all instances of all classes' do
       YAML.should_receive(:load_file).once.and_return FAKE_CONFIG
       3.times do
-        in_new_class do
+        new_class.new.instance_eval do
           3.times { config }
         end
       end

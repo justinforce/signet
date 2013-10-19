@@ -4,6 +4,11 @@ require 'hashie/mash'
 module Signet
   module Configuration
 
+    # expose methods to classes
+    def self.included(klass)
+      klass.extend Configuration
+    end
+
     def config
       @@config ||= Hashie::Mash.new(YAML.load_file config_path)
     end

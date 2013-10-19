@@ -1,3 +1,5 @@
+http:
+  ssl_client_verify_header: SSL_CLIENT_VERIFY
 database:
   adapter: sqlite3
   database: db/test.sqlite3

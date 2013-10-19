@@ -95,3 +95,7 @@ def unset_certificate_authority
     Signet::CertificateAuthority.class_variable_set var, nil
   end
 end
+
+def ssl_client_verify_header
+  "HTTP_#{config.http.ssl_client_verify_header}"
+end

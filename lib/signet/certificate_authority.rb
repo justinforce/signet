@@ -85,7 +85,7 @@ module Signet
     # Returns a reasonably unique integer for use as a serial number
     #
     def serial
-      SecureRandom.uuid.gsub(/-/, '').hex
+      (Time.now.to_f * 10_000_000).to_i
     end
 
     ##

@@ -72,9 +72,9 @@ describe Signet::Shims::LegacyCertificateSigner do
         app_get "/csr_gen/#{key}.pem"
       end
 
-      it 'sends the certificate in the body' do
+      it 'sends the certificate in the body with the text and PEM' do
         app_get "/csr_gen/#{key}.pem"
-        last_response.body.should == cert.to_pem
+        last_response.body.should == "#{cert.to_text}\n#{cert.to_pem}"
       end
 
       it 'returns a 200 OK status' do
