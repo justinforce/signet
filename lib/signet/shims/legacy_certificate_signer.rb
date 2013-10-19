@@ -38,7 +38,10 @@ module Signet
       end
 
       get '/csr_gen/:mac.pem' do |mac|
-        CertificateCache.pop(mac) || 404
+        pem = CertificateCache.pop(mac)
+        return 404 if pem.nil?
+        cert = OpenSSL::X509::Certificate.new(pem)
+        "#{cert.to_text}\n#{pem}"
       end
       authentication_exemptions << /^\/csr_gen\/.*\.pem$/
 
