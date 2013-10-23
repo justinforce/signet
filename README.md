@@ -172,6 +172,72 @@ This shim supports legacy certificate requests which are made in two parts. For
 a complete description of how this works, see the comments in
 `lib/signet/shims/legacy_certificate_signer.rb`.
 
+API
+---
+
+### POST /csr ###
+
+The API supports a single request: a POST to `/csr`.
+
+#### Request ####
+
+The request is a POST to `/csr` including as parameters:
+
+* `csr`: a string containing a CSR in PEM format
+* `auth`: a string matching an `identity_key` value in the `users` table of the
+  database.
+
+#### Response ####
+
+| Result                   | Status Code | Body                                                                       |
+| ------------------------ | ----------- | -------------------------------------------------------------------------- |
+| Success                  | 200         | The generated certificate in PEM format (encoded certificate only)         |
+| Missing parameter        | 400         | A notification describing the parameter that is missing                    |
+| Malformed CSR            | 400         | A notification that the CSR is missing or malformed                        |
+| Bad `auth` value         | 403         | A notification that the `auth` value is invalid                            |
+| Server Error             | 500         | A simple error message (normally caused by database connectivity problems) |
+
+### Legacy Requests
+
+Legacy requests are accomplished in two steps: a POST to `/csr/signme` and a GET
+to `csr_gen/#{unique_id}.pem`.
+
+### POST /csr/signme ###
+
+#### Request ####
+
+The request is a POST to `/csr` including as parameters:
+
+* `csr`: an uploaded file *(not a string!)* containing a CSR in PEM format
+* `identity_key`: a string matching an `identity_key` value in the `users` table
+  of the database.
+
+#### Response ####
+
+| Result                   | Status Code | Body                                                                                                      |
+| ------------------------ | ----------- | --------------------------------------------------------------------------------------------------------- |
+| Success                  | 200         | No body is returned.                                                                                      |
+| Missing parameter        | 400         | A notification describing the parameter that is missing                                                   |
+| Malformed CSR            | 400         | A notification that the CSR is missing or malformed                                                       |
+| Bad `identity_key` value | 403         | A notification that the `identity_key` value is invalid                                                   |
+| Server Error             | 500         | A simple error message (normally caused by database connectivity problems)                                |
+
+### GET /csr_gen/#{unique_id}.pem ###
+
+#### Request ####
+
+The request is a GET to `/csr_gen/#{unique_id}.pem` where `#{unique_id}` is the `CN`
+from the `/csr/signme` CSR.
+
+#### Response ####
+
+The response is the certificate
+
+| Result                   | Status Code | Body                                                                                                      |
+| ------------------------ | ----------- | --------------------------------------------------------------------------------------------------------- |
+| Success                  | 200         | The generated certificate in PEM format (encoded certificate AND the plain text certificate concatenated) |
+| Certificate not found    | 404         | No body is returned if the certificate does not exist in the cache.                                       |
+
 Contributing
 ------------
 
